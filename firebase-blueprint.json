@@ -1,0 +1,99 @@
+{
+  "entities": {
+    "Analysis": {
+      "title": "Analysis",
+      "description": "A single overthinking analysis for a user decision.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User ID of the owner" },
+        "decision": { "type": "string" },
+        "thoughts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": { "type": "string" },
+              "type": { "type": "string", "enum": ["logical", "emotional", "irrational", "catastrophic"] },
+              "bias": { "type": "string" },
+              "biasExplanation": { "type": "string" },
+              "realityCheck": { "type": "string", "description": "Counter-argument for irrational thoughts" }
+            }
+          }
+        },
+        "balancedPerspectives": { "type": "array", "items": { "type": "string" } },
+        "overthinkingScore": { "type": "number" },
+        "overthinkingLevel": { "type": "string" },
+        "advice": { "type": "string" },
+        "whatIfQuestion": { "type": "string" },
+        "timeSimulation": {
+          "type": "object",
+          "properties": {
+            "oneMonth": { "type": "string" },
+            "oneYear": { "type": "string" },
+            "fiveYears": { "type": "string" },
+            "whatIfImpact": { "type": "string" }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "decision", "thoughts", "overthinkingScore", "createdAt"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User personalization data.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "commonBiases": { "type": "array", "items": { "type": "string" } },
+        "averageOverthinkingScore": { "type": "number" },
+        "lastAnalyzedAt": { "type": "string", "format": "date-time" },
+        "clarityWins": { "type": "number", "description": "Number of completed action steps" }
+      },
+      "required": ["uid"]
+    },
+    "ActionStep": {
+      "title": "ActionStep",
+      "description": "A practical step to reduce uncertainty.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "text": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "completed", "resolved"] },
+        "reminderAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "analysisId": { "type": "string" }
+      },
+      "required": ["uid", "text", "status", "createdAt"]
+    },
+    "Evidence": {
+      "title": "Evidence",
+      "description": "Evidence-based reasoning to counter irrational thoughts.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "text": { "type": "string" },
+        "bias": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "text", "bias", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/analyses/{analysisId}": {
+      "schema": "Analysis",
+      "description": "Collection of user analyses."
+    },
+    "/userProfiles/{uid}": {
+      "schema": "UserProfile",
+      "description": "User personalization profiles."
+    },
+    "/actionSteps/{stepId}": {
+      "schema": "ActionStep",
+      "description": "Collection of user action steps."
+    },
+    "/evidenceLocker/{evidenceId}": {
+      "schema": "Evidence",
+      "description": "Collection of user evidence."
+    }
+  }
+}

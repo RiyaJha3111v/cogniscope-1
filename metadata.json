@@ -1,0 +1,5 @@
+{
+  "name": "CogniScope",
+  "description": "An AI system that simulates human overthinking by generating, classifying, and analyzing decision pathways, including logical reasoning and cognitive distortions.",
+  "requestFramePermissions": ["microphone"]
+}

@@ -1,0 +1,118 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: analyses
+// Document ID: auto-generated
+// Fields:
+//   - uid: string (required) - User ID of the owner
+//   - decision: string (required)
+//   - thoughts: array (required) - List of thought objects
+//   - balancedPerspectives: array (required)
+//   - overthinkingScore: number (required)
+//   - overthinkingLevel: string (required)
+//   - advice: string (required)
+//   - createdAt: timestamp (required)
+//
+// Collection: userProfiles
+// Document ID: userId
+// Fields:
+//   - uid: string (required)
+//   - commonBiases: array
+//   - averageOverthinkingScore: number
+//   - lastAnalyzedAt: timestamp
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function isValidAnalysis(data) {
+      return data.keys().hasAll(['uid', 'decision', 'thoughts', 'overthinkingScore', 'createdAt']) &&
+             data.uid == request.auth.uid &&
+             data.decision is string && data.decision.size() < 1000 &&
+             data.thoughts is list && data.thoughts.size() < 50 &&
+             data.overthinkingScore is number &&
+             data.createdAt is timestamp &&
+             (!('whatIfQuestion' in data) || data.whatIfQuestion is string) &&
+             (!('timeSimulation' in data) || data.timeSimulation is map);
+    }
+
+    function isValidProfile(data) {
+      return data.keys().hasAll(['uid']) &&
+             data.uid == request.auth.uid &&
+             (!('commonBiases' in data) || data.commonBiases is list) &&
+             (!('averageOverthinkingScore' in data) || data.averageOverthinkingScore is number) &&
+             (!('clarityWins' in data) || data.clarityWins is number);
+    }
+
+    function isValidActionStep(data) {
+      return data.keys().hasAll(['uid', 'text', 'status', 'createdAt']) &&
+             data.uid == request.auth.uid &&
+             data.text is string && data.text.size() < 500 &&
+             data.status in ['pending', 'completed', 'resolved'] &&
+             data.createdAt is timestamp &&
+             (!('reminderAt' in data) || data.reminderAt is timestamp);
+    }
+
+    function isValidEvidence(data) {
+      return data.keys().hasAll(['uid', 'text', 'bias', 'createdAt']) &&
+             data.uid == request.auth.uid &&
+             data.text is string && data.text.size() < 1000 &&
+             data.bias is string &&
+             data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /analyses/{analysisId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && isValidAnalysis(request.resource.data);
+      allow update: if false; // Analyses are immutable
+      allow delete: if isDocOwner();
+    }
+
+    match /userProfiles/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid) && isValidProfile(request.resource.data);
+      allow delete: if isOwner(uid);
+    }
+
+    match /actionSteps/{stepId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && isValidActionStep(request.resource.data);
+      allow update: if isDocOwner() && isValidActionStep(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /evidenceLocker/{evidenceId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && isValidEvidence(request.resource.data);
+      allow update: if false; // Evidence is immutable
+      allow delete: if isDocOwner();
+    }
+
+    // Default deny
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "projectId": "neurobeat",
+  "appId": "1:221525768738:web:5b297a5205063db493e87b",
+  "apiKey": "AIzaSyBSFI2ZL0ZucGhBmHqXprrqIrki1Z7dwdI",
+  "authDomain": "neurobeat.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-81197e4d-3c9c-462a-bd4b-e239cedbb32e",
+  "storageBucket": "neurobeat.firebasestorage.app",
+  "messagingSenderId": "221525768738",
+  "measurementId": ""
+}

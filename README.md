@@ -1,2 +1,20 @@
-# cogniscope-1
-An AI-powered cognitive simulation system that analyzes overthinking patterns, detects cognitive biases, and generates rational alternatives with actionable solutions to improve decision-making
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
+
+# Run and deploy your AI Studio app
+
+This contains everything you need to run your app locally.
+
+View your app in AI Studio: https://ai.studio/apps/81197e4d-3c9c-462a-bd4b-e239cedbb32e
+
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
